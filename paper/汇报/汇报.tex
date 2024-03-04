@@ -1,0 +1,179 @@
+\documentclass{article}
+\usepackage{graphicx} % Required for inserting images
+\usepackage{geometry}
+\usepackage {ctex}
+\usepackage{biblatex}  
+\addbibresource{ref.bib}
+\geometry{a4paper,scale=0.8}
+\usepackage{amsmath}
+\numberwithin{figure}{section}
+\numberwithin{equation}{section}
+\usepackage{multirow}
+\numberwithin{table}{section}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage[colorlinks,
+            linkcolor=blue,
+            anchorcolor=blue,
+            citecolor=blue]{hyperref}
+
+\title{PDE SIR}
+% \author{liza azi}
+\date{\today}
+
+\begin{document}
+\maketitle
+\begin{abstract}
+    老师，模型的建立已经完成，但是在具体实现的时候遇到了一些问题（见章节\ref{problem}）。我想到了三种解决方案，想请教您哪种方案更好，还有其他方案吗？如果要实施的话，从哪个方案开始成功的可能性最大？\\
+\begin{table}[h!]
+  \begin{center}
+    \caption{总结}
+    \begin{tabular}{ccc} % <-- Alignments: 1st column left, 2nd middle and 3rd right, with vertical lines in between
+\toprule
+方案 & 优点 &不足 \\
+\midrule
+\multirow{2}*{一} &  1.可以得到每个年龄段对每个年龄段的传染率$\lambda(a,a',t)$ &  1.增大计算量 \\
+ & 2.保持模型结构不变 & 2.现有数据量可能不足\\
+\midrule
+二 &  1.大幅减少计算量 &  1.只能得到每个年龄段的易感率$\lambda(a,t)$ \\
+\midrule
+\multirow{3}*{三} &  1.可以得到每个年龄段对每个年龄段的传染率$\lambda(a,a',t)$ &  1.增大计算量 \\
+ & 2.在较少数据下表现更好 & 2.如何生成预训练的仿真数据\\
+ & 3.训练好的$NN_2(a,t)$可以在其他数据集直接使用 &3. 是否具有可行性\\
+\bottomrule
+    \end{tabular}
+  \end{center}
+\end{table}
+\end{abstract}
+\section{模型建立}
+
+\begin{table}[h!]
+  \begin{center}
+    \caption{符号说明}
+    \begin{tabular}{cc} % <-- Alignments: 1st column left, 2nd middle and 3rd right, with vertical lines in between
+\toprule
+符号 & 含义 \\
+\midrule
+$ a$ & 年龄\\
+$ d(a,t)$ & 死亡率\\
+$ v(a,t)$ & 疫苗接种率 \\
+$ \lambda(a,a',t)$ & a'对a的传染率 \\
+$ p(a)$ & 疫苗保护率 \\
+$ \theta(a,t)$ & 补充接种率\\
+$\delta (a)$ & 免疫丧失率\\
+$B(t)$ & 出生人口\\
+$M(t)$ & 母婴传播数 \\
+$A$ & 人群最大寿命 \\
+$\gamma(a) $& 恢复率\\
+\bottomrule
+    \end{tabular}
+  \end{center}
+\end{table}
+假设：\\
+1. 由于流行时间较短、数据获取难度较大，$p(a),\delta(a),\gamma(a)$只与年龄有关，不随时间变化\\
+2. 存在母婴传播，但不存在先天免疫
+
+可能存在的问题：\\
+1. 没有考虑病死率（所有群体死亡率一致）\\
+2. 没有考虑人口迁入迁出\\
+方程：
+\begin{equation}
+\left\{
+\begin{aligned}\label{pde}
+\frac{\partial}{\partial a} S(a,t)+\frac{\partial}{\partial t} S(a,t)  =&  -(d(a,t)+(v(a,t)+\theta(a,t))p(a))S(a,t)- S(a,t)\int_{0}^{A} \lambda(a,a',t)I(a',t)da'+\delta(a) R(a,t)\\
+\frac{\partial}{\partial a} I(a,t)+\frac{\partial}{\partial t} I(a,t)  =&  S(a,t)\int_{0}^{A} \lambda(a,a',t)I(a',t)da'-(d(a,t)+\gamma(a))I(a,t) \\
+\frac{\partial}{\partial a} R(a,t)+\frac{\partial}{\partial t} R(a,t)  =&  (v(a,t)+\theta(a,t))p(a)S(a,t)+\gamma(a) I(a,t)-(d(a,t)+\delta(a))R(a,t)
+\end{aligned}
+\right.
+\end{equation}
+
+边界条件：
+\begin{equation}
+\left\{
+\begin{aligned}
+S(0,t)=&B(t)-M(t)\\
+I(0,t)=&M(t)\\
+R(0,t)=&0\\
+S(a,0)=&S_0(a)\\
+I(a,0)=&I_0(a)\\
+R(a,0)=&R_0(a)\\
+\end{aligned}
+\right.
+\end{equation}
+
+\section{模型求解} \label{problem}
+\subsection{存在的问题}
+在之前ode的SEIR模型\cite{he2023transmission} 复现中存在无法同时优化两个网络（如图\ref{ode-nn}），而导致求解困难，达不到理想效果的问题。当时的解决方案是把两个网络合并为一个网络。即将
+\begin{equation}
+\begin{aligned}
+NN_1(t)&=\lambda\\
+NN_2(\lambda,t)&=X
+\end{aligned}
+\end{equation}
+改为
+\begin{equation}
+    X,\lambda=NN(t)
+\end{equation}
+其中$X$为各仓室人口数量，$\lambda$ 为传染率，两个网络输入变量相同都是$t$，可以合并。
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\linewidth]{img/seir.png}\label{ode-nn}
+    \caption{ODE情况下理论上的网络结构}
+\end{figure}
+而在PDE模型\eqref{pde}中若采用两个网络则
+\begin{equation}
+\begin{aligned}\label{p1}
+    NN_1(a,a',t)&=\lambda(a,a',t)\\
+    NN_2(a,t,\lambda)&=X
+\end{aligned}
+\end{equation}
+两个网络的输入变量不同，由以下解决方案。
+\subsection{解决方案}
+一. 将\eqref{p1}中的$NN_2(a,t,\lambda)$增添一个输入变量$a'$变为$NN_2(a,a',t,\lambda)$
+
+二. 化简\eqref{p1}中的$\int_{0}^{A} \lambda(a,a',t)I(a',t)da'$部分，由积分中值定理
+\begin{equation}
+    \int_{0}^{A} \lambda(a,a',t)I(a',t)da'=\lambda(a,\epsilon,t)\int_{0}^{A} I(a',t)da',\epsilon \in (0,A)
+\end{equation}
+每一对$a,t$对应一个$\epsilon$，存在$\hat{\lambda}(a,t)$
+\begin{equation}
+    \hat{\lambda}(a,t)=\lambda(a,\epsilon(a,t),t)
+\end{equation}
+可以将\eqref{p1}改为
+\begin{equation}
+\begin{aligned}
+    NN_1(a,t)&=\hat{\lambda}(a,t)\\
+    NN_2(a,t,\lambda)&=X
+\end{aligned}
+\end{equation}
+其中$\hat{\lambda}(a,t)$的实际含义为年龄为$a$的易感群体在$t$时刻的易感程度。
+
+三. 分布训练两个模型（预训练+LoRA微调）
+
+在之前ode的SEIR模型\cite{he2023transmission}中，损失由数据损失和ODE损失两部分组成：
+\begin{equation}
+    Loss=Loss_{data}+Loss_{ODE}
+\end{equation}
+而在神经网络\eqref{p1}中，$NN_2(a,t)$对应$Loss_{ODE}$，可以预先设定不同的$\lambda(a,a',t)$，使用\eqref{pde}生成多组仿真数据预先训练$NN_2(a,t)$，当$NN_2(a,t)$学习到足够多的PDE信息后再将其中的参数冻结，用$NN_1(a,a',t)$代替$\lambda(a,a',t)$使用真实数据进行训练。
+
+\begin{table}[h!]
+  \begin{center}
+    \caption{总结}
+    \begin{tabular}{ccc} % <-- Alignments: 1st column left, 2nd middle and 3rd right, with vertical lines in between
+\toprule
+方案 & 优点 &不足 \\
+\midrule
+\multirow{2}*{一} &  1.可以得到每个年龄段对每个年龄段的传染率$\lambda(a,a',t)$ &  1.增大计算量 \\
+ & 2.保持模型结构不变 & 2.现有数据量可能不足\\
+\midrule
+二 &  1.大幅减少计算量 &  1.只能得到每个年龄段的易感率$\lambda(a,t)$ \\
+\midrule
+\multirow{3}*{三} &  1.可以得到每个年龄段对每个年龄段的传染率$\lambda(a,a',t)$ &  1.增大计算量 \\
+ & 2.在较少数据下表现更好 & 2.如何生成预训练的仿真数据\\
+ & 3.训练好的$NN_2(a,t)$可以在其他数据集直接使用 &3. 是否具有可行性\\
+\bottomrule
+    \end{tabular}
+  \end{center}
+\end{table}
+\printbibliography
+\end{document}
