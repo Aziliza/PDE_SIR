@@ -24,7 +24,16 @@
 \begin{document}
 \maketitle
 \begin{abstract}
-  老师我已完成部分模型搭建的工作，使用的方案二\ref{Solution}。在将真实数据带入求解事遇到了如下问题\ref{problem}，应该对年龄和时间分别选择哪个时间单位？ \\
+  老师我已完成部分模型搭建的工作，使用的方案二\ref{Solution}。在将真实数据带入求解事遇到了如下问题（具体见\ref{problem}），应该对年龄和时间分别选择哪个时间单位？比如在这个方程中，$a,t$的单位应该一致，但如果时间单位是日、月、年，是否需要对参数进行调整，是否影响结果
+  \begin{equation}
+    \left\{
+    \begin{aligned}
+    \frac{\partial}{\partial a} S(a,t)+\frac{\partial}{\partial t} S(a,t)  =&  -(d(a,t)+(v(a,t)+\theta(a,t))p(a))S(a,t)- S(a,t)\int_{0}^{A} \lambda(a,a',t)I(a',t)da'+\delta(a) R(a,t)\\
+    \frac{\partial}{\partial a} I(a,t)+\frac{\partial}{\partial t} I(a,t)  =&  S(a,t)\int_{0}^{A} \lambda(a,a',t)I(a',t)da'-(d(a,t)+\gamma(a))I(a,t) \\
+    \frac{\partial}{\partial a} R(a,t)+\frac{\partial}{\partial t} R(a,t)  =&  (v(a,t)+\theta(a,t))p(a)S(a,t)+\gamma(a) I(a,t)-(d(a,t)+\delta(a))R(a,t)
+    \end{aligned}
+    \right.
+  \end{equation}
 \end{abstract}
 
 \tableofcontents
