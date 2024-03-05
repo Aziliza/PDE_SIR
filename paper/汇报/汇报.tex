@@ -18,33 +18,18 @@
             citecolor=blue]{hyperref}
 
 \title{PDE SIR}
-% \author{liza azi}
+\author{王乾宇}
 \date{\today}
 
 \begin{document}
 \maketitle
 \begin{abstract}
-    老师，模型的建立已经完成，但是在具体实现的时候遇到了一些问题（见章节\ref{problem}）。我想到了三种解决方案，想请教您哪种方案更好，还有其他方案吗？如果要实施的话，从哪个方案开始成功的可能性最大？\\
-\begin{table}[h!]
-  \begin{center}
-    \caption{总结}
-    \begin{tabular}{ccc} % <-- Alignments: 1st column left, 2nd middle and 3rd right, with vertical lines in between
-\toprule
-方案 & 优点 &不足 \\
-\midrule
-\multirow{2}*{一} &  1.可以得到每个年龄段对每个年龄段的传染率$\lambda(a,a',t)$ &  1.增大计算量 \\
- & 2.保持模型结构不变 & 2.现有数据量可能不足\\
-\midrule
-二 &  1.大幅减少计算量 &  1.只能得到每个年龄段的易感率$\lambda(a,t)$ \\
-\midrule
-\multirow{3}*{三} &  1.可以得到每个年龄段对每个年龄段的传染率$\lambda(a,a',t)$ &  1.增大计算量 \\
- & 2.在较少数据下表现更好 & 2.如何生成预训练的仿真数据\\
- & 3.训练好的$NN_2(a,t)$可以在其他数据集直接使用 &3. 是否具有可行性\\
-\bottomrule
-    \end{tabular}
-  \end{center}
-\end{table}
+  老师我已完成部分模型搭建的工作，使用的方案二\ref{Solution}。在将真实数据带入求解事遇到了如下问题\ref{problem}，应该对年龄和时间分别选择哪个时间单位？ \\
 \end{abstract}
+
+\tableofcontents
+\newpage
+
 \section{模型建立}
 
 \begin{table}[h!]
@@ -101,7 +86,7 @@ R(a,0)=&R_0(a)\\
 \right.
 \end{equation}
 
-\section{模型求解} \label{problem}
+\section{网络结构问题} \label{problem}
 \subsection{存在的问题}
 在之前ode的SEIR模型\cite{he2023transmission} 复现中存在无法同时优化两个网络（如图\ref{ode-nn}），而导致求解困难，达不到理想效果的问题。当时的解决方案是把两个网络合并为一个网络。即将
 \begin{equation}
@@ -128,7 +113,7 @@ NN_2(\lambda,t)&=X
 \end{aligned}
 \end{equation}
 两个网络的输入变量不同，由以下解决方案。
-\subsection{解决方案}
+\subsection{解决方案}\label{Solution}
 一. 将\eqref{p1}中的$NN_2(a,t,\lambda)$增添一个输入变量$a'$变为$NN_2(a,a',t,\lambda)$
 
 二. 化简\eqref{p1}中的$\int_{0}^{A} \lambda(a,a',t)I(a',t)da'$部分，由积分中值定理
@@ -175,5 +160,54 @@ NN_2(\lambda,t)&=X
     \end{tabular}
   \end{center}
 \end{table}
+
+对于这三种解决方案，按照可行性从二>一>三的顺序进行。
+
+\section{参数的问题}\label{problem}
+\subsection{时间单位}
+对于部分参数，师姐给出了一些文献中的参考值，如（图\ref{para}）为年龄分组的数值，分组的组距为7个月、15个月、12年、5年、10年不等。同时，麻疹数据的时间单位为月，年龄单位为年（如图\ref{data}），对于本文的连续性模型应该采用怎样的时间单位？（月？年？）
+
+如果$a$的单位为年，$t$的单位为月的话，\eqref{pde}式应改为：
+\begin{equation}
+  \left\{
+  \begin{aligned}
+  \frac{\partial}{\partial a} S(a,t)+12\frac{\partial}{\partial t} S(a,t)  =&  -(d(a,t)+(v(a,t)+\theta(a,t))p(a))S(a,t)- S(a,t)\int_{0}^{A} \lambda(a,a',t)I(a',t)da'+\delta(a) R(a,t)\\
+  \frac{\partial}{\partial a} I(a,t)+12\frac{\partial}{\partial t} I(a,t)  =&  S(a,t)\int_{0}^{A} \lambda(a,a',t)I(a',t)da'-(d(a,t)+\gamma(a))I(a,t) \\
+  \frac{\partial}{\partial a} R(a,t)+12\frac{\partial}{\partial t} R(a,t)  =&  (v(a,t)+\theta(a,t))p(a)S(a,t)+\gamma(a) I(a,t)-(d(a,t)+\delta(a))R(a,t)
+  \end{aligned}
+  \right.
+\end{equation}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.8\linewidth]{img/参数.png}\label{para}
+  \caption{部分参数值}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.8\linewidth]{img/数据分组.png}\label{data}
+  \caption{麻疹数据}
+\end{figure}
+
+\subsection{差值方法的选择}
+由于能够获取的参数、感染数据都是离散值，而且大部分数据点并没有相互对应。所以需要选择一种差值方法来扩充数据（部分需要二维差值方法）。可以将以下方法都试一遍选择最好的方法：
+
+\begin{table}[h!]
+  \begin{center}
+    \caption{插值方法}
+    \begin{tabular}{cc} % <-- Alignments: 1st column left, 2nd middle and 3rd right, with vertical lines in between
+\toprule
+方法 & 效果 \\
+\midrule
+牛顿插值 & \\
+Hermite插值 & \\
+三次样条插值 & \\
+\bottomrule
+    \end{tabular}
+  \end{center}
+\end{table}
+
+\href{https://blog.csdn.net/yanfeng1022/article/details/114528323}{九种常见的二维插值方法}
 \printbibliography
 \end{document}
