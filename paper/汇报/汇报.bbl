@@ -62,6 +62,77 @@
       \field{pages}{107431}
       \range{pages}{1}
     \endentry
+    \entry{SHEN2022111242}{article}{}
+      \name{author}{8}{}{%
+        {{hash=3d96583938068f19d16d21f85567206b}{%
+           family={Shen},
+           familyi={S\bibinitperiod},
+           given={Mingwang},
+           giveni={M\bibinitperiod}}}%
+        {{hash=3f7ab078a9eff1027df1b09e409040d2}{%
+           family={Sun},
+           familyi={S\bibinitperiod},
+           given={Xiang},
+           giveni={X\bibinitperiod}}}%
+        {{hash=652da3382d264a5b1d24fb5fcd26fac5}{%
+           family={Xiao},
+           familyi={X\bibinitperiod},
+           given={Yanni},
+           giveni={Y\bibinitperiod}}}%
+        {{hash=9b6cb59cf729aa3ac3c6242462879af0}{%
+           family={Liu},
+           familyi={L\bibinitperiod},
+           given={Yuanbao},
+           giveni={Y\bibinitperiod}}}%
+        {{hash=a654f0cf74c8df2ee591eb4072b8a384}{%
+           family={Wang},
+           familyi={W\bibinitperiod},
+           given={Congyue},
+           giveni={C\bibinitperiod}}}%
+        {{hash=8ba9866c7e5498b3830935d1df3c3733}{%
+           family={Wang},
+           familyi={W\bibinitperiod},
+           given={Zhiguo},
+           giveni={Z\bibinitperiod}}}%
+        {{hash=54755ed85ef6496935676a5b29bc78d0}{%
+           family={Rong},
+           familyi={R\bibinitperiod},
+           given={Libin},
+           giveni={L\bibinitperiod}}}%
+        {{hash=cfcfe6c2a1ffa83b18877f0677a3638b}{%
+           family={Peng},
+           familyi={P\bibinitperiod},
+           given={Zhihang},
+           giveni={Z\bibinitperiod}}}%
+      }
+      \strng{namehash}{5aaa1d50ce29933b58d2694ebf7f613f}
+      \strng{fullhash}{0cdcd3d401af7e659d768065936a7253}
+      \strng{bibnamehash}{5aaa1d50ce29933b58d2694ebf7f613f}
+      \strng{authorbibnamehash}{5aaa1d50ce29933b58d2694ebf7f613f}
+      \strng{authornamehash}{5aaa1d50ce29933b58d2694ebf7f613f}
+      \strng{authorfullhash}{0cdcd3d401af7e659d768065936a7253}
+      \field{sortinit}{S}
+      \field{sortinithash}{b164b07b29984b41daf1e85279fbc5ab}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{issn}{0022-5193}
+      \field{journaltitle}{Journal of Theoretical Biology}
+      \field{title}{The impact of supplementary immunization activities on measles transmission dynamics and implications for measles elimination goals: A mathematical modelling study}
+      \field{volume}{551-552}
+      \field{year}{2022}
+      \field{pages}{111242}
+      \range{pages}{1}
+      \verb{doi}
+      \verb https://doi.org/10.1016/j.jtbi.2022.111242
+      \endverb
+      \verb{urlraw}
+      \verb https://www.sciencedirect.com/science/article/pii/S0022519322002375
+      \endverb
+      \verb{url}
+      \verb https://www.sciencedirect.com/science/article/pii/S0022519322002375
+      \endverb
+      \keyw{Measles elimination,Supplementary immunization activities,Transmission dynamics model,Incidence,The fraction of susceptibles}
+    \endentry
   \enddatalist
 \endrefsection
 \endinput

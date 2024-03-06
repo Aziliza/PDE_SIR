@@ -1,7 +1,7 @@
 \documentclass{article}
 \usepackage{graphicx} % Required for inserting images
 \usepackage{geometry}
-\usepackage {ctex}
+\usepackage{ctex}
 \usepackage{biblatex}  
 \addbibresource{ref.bib}
 \geometry{a4paper,scale=0.8}
@@ -12,6 +12,7 @@
 \numberwithin{table}{section}
 \usepackage{booktabs}
 \usepackage{array}
+\usepackage{xcolor}
 \usepackage[colorlinks,
             linkcolor=blue,
             anchorcolor=blue,
@@ -50,15 +51,15 @@
 \midrule
 $ a$ & 年龄\\
 $ d(a,t)$ & 死亡率\\
-$ v(a,t)$ & 疫苗接种率 \\
+$ v(a)$ & 疫苗接种率 \\
 $ \lambda(a,a',t)$ & a'对a的传染率 \\
 $ p(a)$ & 疫苗保护率 \\
 $ \theta(a,t)$ & 补充接种率\\
 $\delta (a)$ & 免疫丧失率\\
 $B(t)$ & 出生人口\\
-$M(t)$ & 母婴传播数 \\
+\color{blue}$M(t)$ & 母婴传播数 \\
 $A$ & 人群最大寿命 \\
-$\gamma(a) $& 恢复率\\
+\color{blue}$\gamma(a) $& 恢复率\\
 \bottomrule
     \end{tabular}
   \end{center}
@@ -220,9 +221,14 @@ Hermite插值 & \\
 \href{https://blog.csdn.net/yanfeng1022/article/details/114528323}{九种常见的二维插值方法}
 
 \section{数据获取}
-\subsection{人口年龄构成}
-来源\href{https://tj.jiangsu.gov.cn/col/col89815/index.html}{江苏统计年鉴}，根据分年龄段的抽样调查乘以总人数得到各年龄段的总人口。2011年数据缺失，使用2010、2012年的平均值代替。
-\subsection{分年龄组死亡率}
-\href{https://qikan.cqvip.com/Qikan/Article/Detail?id=7107031310}{《江苏省人口平均预期寿命估计及死因差异分析》}这篇文章数据由江苏省疾病预防控制中心提供，但在\href{https://www.jscdc.cn/xxgk_1641/}{江苏疾控官网}未找到。
+\subsection{$S_0(a,t)$}
+来源\href{https://tj.jiangsu.gov.cn/col/col89815/index.html}{江苏统计年鉴}，根据分年龄段的抽样调查乘以总人数得到各年龄段的总人口。2011，2021年数据缺失，分别使用2010、2012，2020、2022年的平均值代替。
+\subsection{$d(a,t),v(a),p(a),\gamma$}
+使用\href{https://www.sciencedirect.com/science/article/pii/S0022519322002375}{The impact of supplementary immunization activities on measles transmission dynamics and implications for measles elimination goals: A mathematical modelling study}\cite{SHEN2022111242}附件中{\color{red}收集}的数据。
+
+\gamma=1
+\subsection{$\delta(a,t)$}
+使用\href{https://www.sciencedirect.com/science/article/pii/S0022519322002375}{The impact of supplementary immunization activities on measles transmission dynamics and implications for measles elimination goals: A mathematical modelling study}\cite{SHEN2022111242}附件中{\color{red}拟合}的数据。
+
 \printbibliography
 \end{document}
